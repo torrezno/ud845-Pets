@@ -23,7 +23,6 @@ public class PetProvider extends ContentProvider {
         return false;
     }
 
-
     @Override
     public Cursor query(Uri uri, String[] projection, String selection, String[] selectionArgs, String sortOrder) {
         return null;

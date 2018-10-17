@@ -15,12 +15,22 @@
  */
 package com.example.android.pets.data;
 
+import android.net.Uri;
 import android.provider.BaseColumns;
 
 /**
  * API Contract for the Pets app.
  */
 public final class PetContract {
+
+    // Constant string of the content authority for the URI of the Provider
+    public static final String CONTENT_AUTHORITY = "com.example.android.pets";
+
+    // Constant URI for the Base URI to the Provider
+    public static final Uri BASE_CONTENT_URI = Uri.parse("content://" + CONTENT_AUTHORITY);
+
+    // Constant String for the table pets Path
+    public static final String PATH_PETS = "pets";
 
     // To prevent someone from accidentally instantiating the contract class,
     // give it an empty constructor.
@@ -31,6 +41,9 @@ public final class PetContract {
      * Each entry in the table represents a single pet.
      */
     public static final class PetEntry implements BaseColumns {
+
+        /** Complete URI for the provider **/
+        public static final Uri CONTENT_URI = Uri.withAppendedPath(BASE_CONTENT_URI, PATH_PETS);
 
         /** Name of database table for pets */
         public final static String TABLE_NAME = "pets";
