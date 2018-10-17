@@ -77,7 +77,26 @@ public class PetProvider extends ContentProvider {
     }
 
     private Uri insertPet(Uri uri, ContentValues values) {
-        SQLiteDatabase database = mDbHelper.getReadableDatabase();
+        SQLiteDatabase database = mDbHelper.getWritableDatabase();
+
+        //Data validation
+        String name = values.getAsString(PetContract.PetEntry.COLUMN_PET_NAME);
+        String breed = values.getAsString(PetContract.PetEntry.COLUMN_PET_BREED);
+        Integer gender = values.getAsInteger(PetContract.PetEntry.COLUMN_PET_GENDER);
+        Integer weight = values.getAsInteger(PetContract.PetEntry.COLUMN_PET_WEIGHT);
+
+        if(name == null){
+            throw new IllegalArgumentException("Pet requires a name");
+        }
+        if(breed == null){
+            throw new IllegalArgumentException("Pet requires a breed");
+        }
+        if(gender == null || !PetContract.PetEntry.isValidGender(gender)){
+            throw new IllegalArgumentException("Pet requires a valid gender");
+        }
+        if(weight != null && weight < 0){
+            throw new IllegalArgumentException("Pet requires a positive weight");
+        }
 
         long row = database.insert(PetContract.PetEntry.TABLE_NAME,null,values);
 
@@ -91,7 +110,49 @@ public class PetProvider extends ContentProvider {
 
     @Override
     public int update(Uri uri, ContentValues values, String selection, String[] selectionArgs) {
-        return 0;
+        final int match = sUriMatcher.match(uri);
+        switch(match){
+            case PETS:
+                return updatePet(uri,values, selection,selectionArgs);
+            case PET_ID:
+                selection = PetContract.PetEntry._ID + "=?";
+                selectionArgs = new String[]{ String.valueOf(ContentUris.parseId(uri)) };
+                return updatePet(uri, values, selection, selectionArgs);
+            default:
+                throw new IllegalArgumentException("Update is not supported for "+ uri);
+        }
+    }
+
+    private int updatePet(Uri uri, ContentValues values, String selection, String[] selectionArgs) {
+        int rows = 0;
+        SQLiteDatabase database = mDbHelper.getWritableDatabase();
+
+        String name = values.getAsString(PetContract.PetEntry.COLUMN_PET_NAME);
+        String breed = values.getAsString(PetContract.PetEntry.COLUMN_PET_BREED);
+        Integer gender = values.getAsInteger(PetContract.PetEntry.COLUMN_PET_GENDER);
+        Integer weight = values.getAsInteger(PetContract.PetEntry.COLUMN_PET_WEIGHT);
+
+        if(values.containsKey(PetContract.PetEntry.COLUMN_PET_NAME) && name == null){
+            throw new IllegalArgumentException("Pet requires a name");
+        }
+        if(values.containsKey(PetContract.PetEntry.COLUMN_PET_BREED) && breed == null){
+            throw new IllegalArgumentException("Pet requires a breed");
+        }
+        if(values.containsKey(PetContract.PetEntry.COLUMN_PET_BREED) && gender == null || !PetContract.PetEntry.isValidGender(gender)){
+            throw new IllegalArgumentException("Pet requires a valid gender");
+        }
+        if(values.containsKey(PetContract.PetEntry.COLUMN_PET_WEIGHT) && weight != null && weight < 0){
+            throw new IllegalArgumentException("Pet requires a positive weight");
+        }
+
+        rows = database.update(PetContract.PetEntry.TABLE_NAME, values, selection, selectionArgs);
+
+
+        if (rows == -1) {
+            Log.e(LOG_TAG, "Failed to update row for " + uri);
+            return -1;
+        }
+        return rows;
     }
 
     @Override
