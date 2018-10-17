@@ -9,6 +9,9 @@ import android.content.UriMatcher;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.net.Uri;
+import android.util.Log;
+
+import java.net.URI;
 
 /**
  * {@link ContentProvider} for Pets app.
@@ -64,8 +67,27 @@ public class PetProvider extends ContentProvider {
 
     @Override
     public Uri insert(Uri uri, ContentValues values) {
-        return null;
+        int match = sUriMatcher.match(uri);
+        switch(match){
+            case PETS:
+                return insertPet(uri,values);
+            default:
+                throw new IllegalArgumentException("Cannot query unknown URI " + uri);
+        }
     }
+
+    private Uri insertPet(Uri uri, ContentValues values) {
+        SQLiteDatabase database = mDbHelper.getReadableDatabase();
+
+        long row = database.insert(PetContract.PetEntry.TABLE_NAME,null,values);
+
+        if (row == -1) {
+            Log.e(LOG_TAG, "Failed to insert row for " + uri);
+            return null;
+        }
+        return ContentUris.withAppendedId(uri,row);
+    }
+
 
     @Override
     public int update(Uri uri, ContentValues values, String selection, String[] selectionArgs) {

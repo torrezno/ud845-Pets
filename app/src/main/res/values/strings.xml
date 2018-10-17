@@ -58,4 +58,11 @@
 
     <!-- Label for dropdown menu option if the pet is female [CHAR LIMIT=20] -->
     <string name="gender_female">Female</string>
+
+    <!-- Default text for error insertion [CHAR LIMIT=NONE] -->
+    <string name="insert_error">Error with saving pet</string>
+
+    <!-- Default text for succesful insertion [CHAR LIMIT=NONE] -->
+    <string name="insert_ok">Pet saved </string>
+
 </resources>
