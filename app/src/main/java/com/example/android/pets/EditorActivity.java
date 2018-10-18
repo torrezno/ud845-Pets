@@ -169,10 +169,10 @@ public class EditorActivity extends AppCompatActivity implements LoaderManager.L
         }
 
         // Show a toast message depending on whether or not the insertion was successful
-        if (rows == -1) {
+        if (rows == 0) {
             // If the row ID is -1, then there was an error with insertion.
             Toast.makeText(this, "Error updating", Toast.LENGTH_SHORT).show();
-        } else {
+        } else if (rows >0){
             // Otherwise, the insertion was successful.
             Toast.makeText(this, "Updated " + rows + " rows" , Toast.LENGTH_SHORT).show();
             getSupportLoaderManager().initLoader(0,null,this);
