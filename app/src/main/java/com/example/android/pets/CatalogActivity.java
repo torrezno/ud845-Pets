@@ -38,7 +38,7 @@ import com.example.android.pets.data.PetDbHelper;
 public class CatalogActivity extends AppCompatActivity {
 
     /** Database helper that will provide us access to the database */
-    Cursor mCursor;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -55,8 +55,7 @@ public class CatalogActivity extends AppCompatActivity {
             }
         });
 
-        ListView listView = findViewById(R.id.list_view_pet);
-        listView.setAdapter(new PetCursorAdapter(this,mCursor));
+
 
         // To access our database, we instantiate our subclass of SQLiteOpenHelper
         // and pass the context, which is the current activity.
@@ -82,13 +81,16 @@ public class CatalogActivity extends AppCompatActivity {
                 PetEntry.COLUMN_PET_GENDER,
                 PetEntry.COLUMN_PET_WEIGHT };
 
-        mCursor = getContentResolver().query(
+        Cursor cursor = getContentResolver().query(
                 PetEntry.CONTENT_URI,   // The table to query
                 projection,             // The columns to return
                 null,          // The columns for the WHERE clause
                 null,       // The values for the WHERE clause
                 null);        // The sort order
 
+        ListView listView = findViewById(R.id.list_view_pet);
+        listView.setAdapter(new PetCursorAdapter(this,cursor));
+        cursor.close();
 
         /*TextView displayView = (TextView) findViewById(R.id.text_view_pet);
 
