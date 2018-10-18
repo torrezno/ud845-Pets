@@ -69,9 +69,9 @@ public class EditorActivity extends AppCompatActivity {
         //getIntent() and getData()
         Uri uri = getIntent().getData();
         if(uri==null) {
-            this.setTitle("Add Pet");
+            setTitle("Add Pet");
         }else{
-            this.setTitle("Edit Pet");
+            setTitle("Edit Pet");
             Log.v("TAGURI",uri.toString());
         }
 
