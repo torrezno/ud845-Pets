@@ -152,7 +152,7 @@ public class CatalogActivity extends AppCompatActivity implements LoaderManager.
 
     private void deleteAllPets() {
         int rows = getContentResolver().delete(PetEntry.CONTENT_URI,null,null);
-        if(rows > 1) {
+        if(rows >= 1) {
             Toast.makeText(this, "All pets deleted. Rows = "+rows, Toast.LENGTH_SHORT).show();
         }else{
             Toast.makeText(this, "Something weird happened! " + rows + " rows deleted O.O", Toast.LENGTH_SHORT).show();

@@ -30,6 +30,9 @@ public class PetCursorAdapter extends CursorAdapter {
         String petBreed = cursor.getString(cursor.getColumnIndex(PetContract.PetEntry.COLUMN_PET_BREED));
 
         itemPetNameView.setText(petName);
+        if(petBreed.isEmpty()){
+            petBreed = "Unknown breed";
+        }
         itemPetBreedView.setText(petBreed);
     }
 }
