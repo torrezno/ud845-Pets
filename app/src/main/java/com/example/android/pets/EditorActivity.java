@@ -22,6 +22,7 @@ import android.os.Bundle;
 import android.support.v4.app.NavUtils;
 import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -66,7 +67,14 @@ public class EditorActivity extends AppCompatActivity {
         setContentView(R.layout.activity_editor);
 
         //getIntent() and getData()
-        this.setTitle("MyEdit");
+        Uri uri = getIntent().getData();
+        if(uri==null) {
+            this.setTitle("Add Pet");
+        }else{
+            this.setTitle("Edit Pet");
+            Log.v("TAGURI",uri.toString());
+        }
+
 
         // Find all relevant views that we will need to read user input from
         mNameEditText = (EditText) findViewById(R.id.edit_pet_name);
