@@ -30,6 +30,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ListView;
 
 import com.example.android.pets.data.PetContract.PetEntry;
@@ -64,6 +65,13 @@ public class CatalogActivity extends AppCompatActivity implements LoaderManager.
         mPetAdapter = new PetCursorAdapter(this,null);
         listView.setAdapter(mPetAdapter);
         getSupportLoaderManager().initLoader(0,null,this);
+        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                Intent intent = new Intent(CatalogActivity.this, EditorActivity.class);
+                startActivity(intent);
+            }
+        });
 
         // To access our database, we instantiate our subclass of SQLiteOpenHelper
         // and pass the context, which is the current activity.
