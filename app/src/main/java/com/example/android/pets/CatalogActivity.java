@@ -89,6 +89,8 @@ public class CatalogActivity extends AppCompatActivity {
                 null);        // The sort order
 
         ListView listView = findViewById(R.id.list_view_pet);
+        View emptyView = findViewById(R.id.empty_view);
+        listView.setEmptyView(emptyView);
         listView.setAdapter(new PetCursorAdapter(this,cursor));
     }
 
