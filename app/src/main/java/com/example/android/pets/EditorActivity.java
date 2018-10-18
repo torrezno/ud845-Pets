@@ -122,7 +122,11 @@ public class EditorActivity extends AppCompatActivity {
         String nameString = mNameEditText.getText().toString().trim();
         String breedString = mBreedEditText.getText().toString().trim();
         String weightString = mWeightEditText.getText().toString().trim();
-        int weight = Integer.parseInt(weightString);
+        int weight = 0;
+        try{
+            weight = Integer.parseInt(weightString);
+        }catch (NumberFormatException e){
+        }
 
         // Create a ContentValues object where column names are the keys,
         // and pet attributes from the editor are the values.
