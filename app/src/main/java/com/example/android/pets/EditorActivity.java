@@ -15,6 +15,7 @@
  */
 package com.example.android.pets;
 
+import android.content.ContentUris;
 import android.content.ContentValues;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
@@ -60,7 +61,7 @@ public class EditorActivity extends AppCompatActivity implements LoaderManager.L
     /** EditText field to enter the pet's gender */
     private Spinner mGenderSpinner;
 
-    private Uri mUri;
+    private Uri mUri=null;
 
     /**
      * Gender of the pet. The possible valid values are in the PetContract.java file:
@@ -77,13 +78,14 @@ public class EditorActivity extends AppCompatActivity implements LoaderManager.L
         //getIntent() and getData()
         mUri = getIntent().getData();
         if(mUri==null) {
-            setTitle("Add Pet");
+            setTitle(getString(R.string.editor_activity_title_add_pet));
         }else{
-            setTitle("Edit Pet");
+            setTitle(getString(R.string.editor_activity_title_edit_pet));
             Log.v("TAGURI",mUri.toString());
+            getSupportLoaderManager().initLoader(0,null,this);
         }
 
-        getSupportLoaderManager().initLoader(0,null,this);
+
         // Find all relevant views that we will need to read user input from
         mNameEditText = (EditText) findViewById(R.id.edit_pet_name);
         mBreedEditText = (EditText) findViewById(R.id.edit_pet_breed);
@@ -135,9 +137,10 @@ public class EditorActivity extends AppCompatActivity implements LoaderManager.L
     /**
      * Get user input from editor and save new pet into database.
      */
-    private void insertPet() {
+    private void savePet() {
         // Read from input fields
         // Use trim to eliminate leading or trailing white space
+
         String nameString = mNameEditText.getText().toString().trim();
         String breedString = mBreedEditText.getText().toString().trim();
         String weightString = mWeightEditText.getText().toString().trim();
@@ -155,16 +158,34 @@ public class EditorActivity extends AppCompatActivity implements LoaderManager.L
         values.put(PetEntry.COLUMN_PET_GENDER, mGender);
         values.put(PetEntry.COLUMN_PET_WEIGHT, weight);
 
+        int rows = -1;
         // Insert a new row for pet in the database, returning the Uri of that new row.
-        Uri newUri = getContentResolver().insert(PetEntry.CONTENT_URI,values);
+        if(mUri==null){//Insert
+            mUri = getContentResolver().insert(PetEntry.CONTENT_URI,values);
+        }else{//Update
+            String[] selectionArgs = new String[]{"" + ContentUris.parseId(mUri)};
+            String selection = PetEntry._ID+"=?";
+            rows = getContentResolver().update(mUri,values,null,null);
+        }
 
         // Show a toast message depending on whether or not the insertion was successful
-        if (newUri == null) {
+        if (rows == -1) {
+            // If the row ID is -1, then there was an error with insertion.
+            Toast.makeText(this, "Error updating", Toast.LENGTH_SHORT).show();
+        } else {
+            // Otherwise, the insertion was successful.
+            Toast.makeText(this, "Updated " + rows + " rows" , Toast.LENGTH_SHORT).show();
+            getSupportLoaderManager().initLoader(0,null,this);
+        }
+
+        // Show a toast message depending on whether or not the insertion was successful
+        if (mUri == null) {
             // If the row ID is -1, then there was an error with insertion.
             Toast.makeText(this, getString(R.string.insert_error), Toast.LENGTH_SHORT).show();
         } else {
             // Otherwise, the insertion was successful.
             Toast.makeText(this, getString(R.string.insert_ok) , Toast.LENGTH_SHORT).show();
+            getSupportLoaderManager().initLoader(0,null,this);
         }
     }
 
@@ -183,7 +204,7 @@ public class EditorActivity extends AppCompatActivity implements LoaderManager.L
             // Respond to a click on the "Save" menu option
             case R.id.action_save:
                 // Save pet to database
-                insertPet();
+                savePet();
                 // Exit activity
                 finish();
                 return true;
@@ -215,11 +236,12 @@ public class EditorActivity extends AppCompatActivity implements LoaderManager.L
 
     @Override
     public void onLoadFinished(@NonNull Loader<Cursor> loader, Cursor cursor) {
-        cursor.moveToNext();
-        mNameEditText.setText(cursor.getString(cursor.getColumnIndex(PetEntry.COLUMN_PET_NAME)));
-        mBreedEditText.setText(cursor.getString(cursor.getColumnIndex(PetEntry.COLUMN_PET_BREED)));
-        mGenderSpinner.setSelection(cursor.getInt(cursor.getColumnIndex(PetEntry.COLUMN_PET_NAME)));
-        mWeightEditText.setText(cursor.getString(cursor.getColumnIndex(PetEntry.COLUMN_PET_WEIGHT)));
+        if(cursor.moveToNext()) {
+            mNameEditText.setText(cursor.getString(cursor.getColumnIndex(PetEntry.COLUMN_PET_NAME)));
+            mBreedEditText.setText(cursor.getString(cursor.getColumnIndex(PetEntry.COLUMN_PET_BREED)));
+            mGenderSpinner.setSelection(cursor.getInt(cursor.getColumnIndex(PetEntry.COLUMN_PET_GENDER)));
+            mWeightEditText.setText(cursor.getString(cursor.getColumnIndex(PetEntry.COLUMN_PET_WEIGHT)));
+        }
     }
 
     @Override
