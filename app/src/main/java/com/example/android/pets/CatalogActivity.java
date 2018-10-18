@@ -26,6 +26,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.ListView;
 import android.widget.TextView;
 
 import com.example.android.pets.data.PetContract.PetEntry;
@@ -37,6 +38,7 @@ import com.example.android.pets.data.PetDbHelper;
 public class CatalogActivity extends AppCompatActivity {
 
     /** Database helper that will provide us access to the database */
+    Cursor mCursor;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -52,6 +54,9 @@ public class CatalogActivity extends AppCompatActivity {
                 startActivity(intent);
             }
         });
+
+        ListView listView = findViewById(R.id.list_view_pet);
+        listView.setAdapter(new PetCursorAdapter(this,mCursor));
 
         // To access our database, we instantiate our subclass of SQLiteOpenHelper
         // and pass the context, which is the current activity.
@@ -77,14 +82,15 @@ public class CatalogActivity extends AppCompatActivity {
                 PetEntry.COLUMN_PET_GENDER,
                 PetEntry.COLUMN_PET_WEIGHT };
 
-        Cursor cursor = getContentResolver().query(
+        mCursor = getContentResolver().query(
                 PetEntry.CONTENT_URI,   // The table to query
                 projection,             // The columns to return
                 null,          // The columns for the WHERE clause
                 null,       // The values for the WHERE clause
                 null);        // The sort order
 
-        TextView displayView = (TextView) findViewById(R.id.text_view_pet);
+
+        /*TextView displayView = (TextView) findViewById(R.id.text_view_pet);
 
         try {
             // Create a header in the Text View that looks like this:
@@ -94,7 +100,7 @@ public class CatalogActivity extends AppCompatActivity {
             //
             // In the while loop below, iterate through the rows of the cursor and display
             // the information from each column in this order.
-            displayView.setText("The pets table contains " + cursor.getCount() + " pets.\n\n");
+            displayView.setText("The pets table contains " + mCursor.getCount() + " pets.\n\n");
             displayView.append(PetEntry._ID + " - " +
                     PetEntry.COLUMN_PET_NAME + " - " +
                     PetEntry.COLUMN_PET_BREED + " - " +
@@ -102,7 +108,7 @@ public class CatalogActivity extends AppCompatActivity {
                     PetEntry.COLUMN_PET_WEIGHT + "\n");
 
             // Figure out the index of each column
-            int idColumnIndex = cursor.getColumnIndex(PetEntry._ID);
+            int idColumnIndex = mCursor.getColumnIndex(PetEntry._ID);
             int nameColumnIndex = cursor.getColumnIndex(PetEntry.COLUMN_PET_NAME);
             int breedColumnIndex = cursor.getColumnIndex(PetEntry.COLUMN_PET_BREED);
             int genderColumnIndex = cursor.getColumnIndex(PetEntry.COLUMN_PET_GENDER);
@@ -129,6 +135,7 @@ public class CatalogActivity extends AppCompatActivity {
             // resources and makes it invalid.
             cursor.close();
         }
+        */
     }
 
     /**
